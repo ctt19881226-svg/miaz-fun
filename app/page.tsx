@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, ArrowRight, FlaskConical, Gamepad2, Menu, Sparkles, X } from "lucide-react";
+import { ArrowDown, ArrowRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { projects } from "@/lib/content";
 
 const reactions = ["Hi! 👋", "Yay! ✨", "Let's play!", "Good job! 👍"];
 const categories = [
-  { id: "games", title: "Mia's Games", copy: "Games made by Mia + AI", icon: Gamepad2, tone: "blue" },
-  { id: "comics", title: "Mia's Comics", copy: "Stories, comics & silly ideas", icon: Sparkles, tone: "pink" },
-  { id: "lab", title: "Mia's Lab", copy: "Little experiments with AI", icon: FlaskConical, tone: "yellow" },
+  { id: "games", title: "Mia's Games", copy: "Games made by Mia + AI", image: "/cards/games.png", tone: "blue" },
+  { id: "comics", title: "Mia's Comics", copy: "Stories, comics & silly ideas", image: "/cards/comics.png", tone: "pink" },
+  { id: "lab", title: "Mia's Lab", copy: "Little experiments with AI", image: "/cards/lab.png", tone: "yellow" },
 ] as const;
 function MiaLogo() {
   return <a className="brand" href="#top" aria-label="Miaz.fun home"><span className="brand-name">Mia</span><span className="brand-domain">miaz.fun</span></a>;
@@ -29,7 +29,7 @@ export default function Home() {
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-doodle hero-doodle-one">✦</div><div className="hero-doodle hero-doodle-two">♥</div>
+        <div className="hero-doodle hero-doodle-one">✦</div><div className="hero-doodle hero-doodle-two">♥</div><span className="scribble-arrow hero-arrow" aria-hidden="true">↝</span>
         <div className="hero-copy">
           <p className="eyebrow">Hello, friend!</p>
           <h1 id="hero-title">Hi, I&apos;m <span>Mia!</span></h1>
@@ -50,11 +50,12 @@ export default function Home() {
       <section className="things-section" id="things" aria-labelledby="things-title">
         <div className="pink-rip" aria-hidden="true" />
         <div className="section-inner">
+          <span className="paper-tape tape-one" aria-hidden="true" /><span className="mini-doodle doodle-one" aria-hidden="true">♡</span><span className="mini-doodle doodle-two" aria-hidden="true">✦</span>
           <p className="section-kicker">pick a door</p><h2 id="things-title">Things I Made <span>✦</span></h2>
           <div className="category-grid">
-            {categories.map(({ id, title, copy, icon: Icon, tone }) => (
+            {categories.map(({ id, title, copy, image, tone }) => (
               <a className={`category-card ${tone}`} href={`#${id}`} id={id} key={id}>
-                <span className="category-icon"><Icon aria-hidden="true" /></span>
+                <span className="category-art"><Image src={image} alt="" width={1536} height={1024} /></span>
                 <span className="category-text"><strong>{title}</strong><small>{copy}</small></span>
                 <span className="circle-arrow"><ArrowRight aria-hidden="true" /></span>
               </a>
@@ -65,7 +66,7 @@ export default function Home() {
 
       <section className="featured" aria-labelledby="featured-title">
         <div className="section-inner">
-          <p className="section-kicker">fresh from Mia&apos;s desk</p><h2 id="featured-title">Featured Creations <span>✦</span></h2>
+          <span className="mini-doodle featured-star" aria-hidden="true">✷</span><p className="section-kicker">fresh from Mia&apos;s desk</p><h2 id="featured-title">Featured Creations <span>✦</span></h2>
           <div className="project-grid">
             {projects.map((project, index) => (
               <article className="project-card" key={project.title}>
@@ -84,7 +85,7 @@ export default function Home() {
 
       <section className="about-strip" id="about" aria-label="About Miaz.fun">
         <Image src="/mia/mia-banner.png" alt="Mia's colorful hand-drawn world" width={1024} height={1024} />
-        <div><p className="section-kicker">a tiny creative playground</p><h2>Made with curiosity,<br />color &amp; a little AI.</h2></div>
+        <div><span className="about-spark" aria-hidden="true">✦</span><p className="section-kicker">a tiny creative playground</p><h2>Made with creativity,<br />color &amp; a little AI.</h2></div>
       </section>
       <footer><MiaLogo /><nav aria-label="Footer navigation"><a href="#games">Games</a><a href="#comics">Comics</a><a href="#lab">Mia&apos;s Lab</a><a href="#about">About</a></nav><p>Made by Mia + a little help from AI ✨</p></footer>
     </main>
