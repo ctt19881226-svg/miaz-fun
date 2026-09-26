@@ -16,8 +16,8 @@
   },
   "routes": [
     {
-      "pattern": "miaz.fun/*",
-      "zone_name": "miaz.fun"
+      "pattern": "miaz.fun",
+      "custom_domain": true
     }
   ],
   "d1_databases": [
