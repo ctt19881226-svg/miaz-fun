@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "miaz-fun",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "no_bundle": true,
+  "rules": [
+    {
+      "type": "ESModule",
+      "globs": ["**/*.js", "**/*.mjs"]
+    }
+  ],
+  "assets": {
+    "directory": "dist/client"
+  },
+  "routes": [
+    {
+      "pattern": "miaz.fun/*",
+      "zone_name": "miaz.fun"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "miaz-fun-db",
+      "database_id": "eda5d50d-0ad0-455c-8821-72509321578f"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
