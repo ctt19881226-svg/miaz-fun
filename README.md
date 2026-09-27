@@ -113,6 +113,11 @@ Replace the filename with the pending migration and `DB` with your D1 binding na
 - `npm run install:ci`: perform the one locked dependency install
 - `npm run dev`: start the Vite/Vinext development server
 - `npm run build`: build the deployable Sites artifact
+- `npm run deploy:cloudflare`: deploy the already-built artifact to the `miaz-fun` Cloudflare Worker
+
+### Production deployment
+
+The canonical source repository is GitHub: `ctt19881226-svg/miaz-fun`. Cloudflare Workers Builds should watch the `main` branch with `npm run build` as the build command and `npm run deploy:cloudflare` as the deploy command. The project root is `/`.
 - `npm run start`: preview the built Worker locally with D1/R2 support
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
