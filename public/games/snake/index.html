@@ -263,6 +263,7 @@
     ovText.textContent = `得分 ${score} 分${score >= best && score > 0 ? '，新纪录！🎉' : ''} · 按空格再玩一次`;
     startBtn.textContent = '再来一局 🔄';
     overlay.classList.add('show');
+    MiazPlayer.showSticker(overlay, 'snake-fruit', score);
     await MiazPlayer.submitScore('snake-fruit', score);
     let board = overlay.querySelector('.miaz-leaderboard');
     if (!board) { board = document.createElement('div'); overlay.append(board); }

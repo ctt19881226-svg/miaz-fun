@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 
-const GAME_IDS = new Set(["star-garden", "snake-fruit"]);
+const GAME_IDS = new Set(["star-garden", "snake-fruit", "neon-rush"]);
 
 function cleanNickname(value: unknown) {
   if (typeof value !== "string") return null;
