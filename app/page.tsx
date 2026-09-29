@@ -81,6 +81,7 @@ export default function Home() {
                 {index === 0 && <span className="good-sticker" aria-hidden="true">GOOD!</span>}
                 <div className={`project-art ${project.art}`} aria-hidden="true">
                   {project.art === "penguin" && <div className="penguin-cover homepage-penguin"><span className="penguin-sun" /><span className="penguin-hero">🐧</span><span className="penguin-ice">❄︎</span><span className="penguin-fish">🐟</span></div>}
+                  {project.art === "racer" && <div className="racer-cover"><span className="racer-moon">◉</span><span className="racer-car">🏎️</span><span className="racer-road">╱ ╲</span><span className="racer-glow">NEON</span></div>}
                   {project.art === "stars" && <><span>★</span><span>✦</span><span>★</span></>}
                   {project.art === "snake" && <><span className="snake">●●●●●</span><span className="fruit">🍎</span></>}
                   {project.art === "comic" && <><span className="comic-panel">MIA</span><span className="comic-panel">♡</span></>}
