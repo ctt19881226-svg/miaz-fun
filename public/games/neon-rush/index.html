@@ -57,11 +57,13 @@ button{font:inherit;font-weight:800;letter-spacing:.16em;font-size:13px;color:#0
   background:linear-gradient(90deg,#5bf0ff,#8affd1);box-shadow:0 0 24px rgba(90,240,255,.5)}
 button:hover{filter:brightness(1.1)}
 button:active{transform:translateY(1px)}
+.sound-toggle{position:absolute;z-index:30;right:18px;bottom:18px;width:46px;height:46px;padding:0;border:1px solid rgba(120,235,255,.4);border-radius:50%;background:rgba(8,12,24,.72);color:#dff8ff;font-size:20px;letter-spacing:0;box-shadow:0 0 18px rgba(90,240,255,.25)}
 @media (max-width:520px){.stat{padding:6px 10px}.val{font-size:19px}.bar{width:120px}}
 </style>
 </head>
 <body>
 <div id="game">
+  <button class="sound-toggle" id="soundToggle" aria-label="Mute sound">🔊</button>
   <canvas id="cv"></canvas>
   <div class="vignette"></div>
   <div class="scan"></div>
@@ -101,6 +103,29 @@ button:active{transform:translateY(1px)}
 
 var cv  = document.getElementById('cv');
 var ctx = cv.getContext('2d');
+var soundOn = true, audio = null, engineOsc = null, engineGain = null;
+
+function audioReady(){
+  if (!soundOn) return null;
+  var Audio = window.AudioContext || window.webkitAudioContext;
+  if (!Audio) return null;
+  if (!audio) audio = new Audio();
+  if (audio.state === 'suspended') audio.resume();
+  return audio;
+}
+function tone(freq, duration, type, volume, endFreq){
+  var a = audioReady(); if (!a) return;
+  var now=a.currentTime, o=a.createOscillator(), g=a.createGain();
+  o.type=type||'sine'; o.frequency.setValueAtTime(freq,now); o.frequency.exponentialRampToValueAtTime(Math.max(30,endFreq||freq),now+duration);
+  g.gain.setValueAtTime(volume||.055,now); g.gain.exponentialRampToValueAtTime(.001,now+duration);
+  o.connect(g).connect(a.destination); o.start(now); o.stop(now+duration);
+}
+function startEngine(){
+  var a=audioReady(); if(!a)return;
+  if(!engineOsc){ engineOsc=a.createOscillator(); engineGain=a.createGain(); engineOsc.type='sawtooth'; engineGain.gain.value=.001; engineOsc.connect(engineGain).connect(a.destination); engineOsc.start(); }
+  engineGain.gain.cancelScheduledValues(a.currentTime); engineGain.gain.linearRampToValueAtTime(.025,a.currentTime+.25); tone(90,.38,'sawtooth',.07,210);
+}
+function stopEngine(){ if(audio&&engineGain){ engineGain.gain.cancelScheduledValues(audio.currentTime); engineGain.gain.linearRampToValueAtTime(.001,audio.currentTime+.25); } }
 
 /* ---------------- tuning ---------------- */
 var SEG_LEN    = 300;                 // world units per road segment
@@ -381,6 +406,7 @@ function update(dt){
     var changing = Math.abs(LANE_CENTERS[G.targetLane] - G.playerX) > LANE_W * 0.35;
     var rate = (G.speed < target ? 0.7 : 1.6) * (changing ? 0.72 : 1);
     G.speed += (target - G.speed) * clamp(rate * dt, 0, 1);
+    if (audio && engineOsc && soundOn) engineOsc.frequency.setTargetAtTime(70 + (G.speed / MAX_SPEED) * 95, audio.currentTime, .08);
   } else if (G.state === 'crash'){
     G.speed += (0 - G.speed) * clamp(3.2 * dt, 0, 1);
     G.crashT += dt;
@@ -422,6 +448,7 @@ function update(dt){
         objects.splice(i, 1);
         G.coins++;
         G.score += 25;
+        tone(740 + (G.coins % 5) * 70, .09, 'triangle', .065, 1180);
         G.flash = Math.max(G.flash, 0.3);
       }
     } else if (gap < LANE_W * 0.52){
@@ -452,6 +479,8 @@ function crash(o){
   burst(o.x, o.z, '#ff9a3c', 34, 240);
   burst(o.x, o.z, '#fff1c4', 18, 300);
   burst(o.x, o.z, '#ff4b7d', 20, 160);
+  tone(170, .48, 'sawtooth', .1, 42);
+  stopEngine();
 }
 
 /* ---------------- render ---------------- */
@@ -992,6 +1021,7 @@ function startGame(){
   resetWorld();
   G.state = 'playing';
   G.spawnT = 0.9;
+  startEngine();
   el.overlay.classList.add('hidden');
   el.hint.classList.remove('hide');
   /* seed the road ahead so it is never empty; the same z gate sets the spacing */
@@ -1013,6 +1043,8 @@ async function gameOver(){
   el.btn.textContent = 'RESTART';
   el.overlay.classList.remove('hidden');
   el.hint.classList.add('hide');
+  stopEngine();
+  setTimeout(function(){ tone(330,.12,'triangle',.05,260); }, 80);
   MiazPlayer.showSticker(el.overlay.querySelector('.card'), 'neon-rush', score);
   await MiazPlayer.submitScore('neon-rush', score);
   var board = el.overlay.querySelector('.miaz-leaderboard');
@@ -1025,6 +1057,7 @@ function shift(dir){
   var n = G.targetLane + dir;
   if (n < 0 || n >= LANES) return;
   G.targetLane = n;
+  tone(260 + n * 70, .045, 'square', .025, 380 + n * 70);
   el.hint.classList.add('hide');
 }
 
@@ -1043,6 +1076,10 @@ window.addEventListener('keydown', function(e){
   else if (k === ' ' || k === 'Spacebar' || k === 'Enter'){ beginOrRestart(); e.preventDefault(); }
 });
 el.btn.addEventListener('click', async function(e){ e.stopPropagation(); await MiazPlayer.ensureNickname(); startGame(); });
+document.getElementById('soundToggle').addEventListener('click', function(e){
+  e.stopPropagation(); soundOn=!soundOn; this.textContent=soundOn?'🔊':'🔇'; this.setAttribute('aria-label',soundOn?'Mute sound':'Unmute sound');
+  if(soundOn){ startEngine(); if(G.state!=='playing') stopEngine(); } else stopEngine();
+});
 
 var game = document.getElementById('game');
 game.addEventListener('pointerdown', function(e){

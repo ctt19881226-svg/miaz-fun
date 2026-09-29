@@ -58,7 +58,7 @@
   }
 
   function stickerFor(gameId, score) {
-    const thresholds = gameId === "star-garden" ? [12, 25, 35] : gameId === "neon-rush" ? [500, 1500, 3000] : [50, 120, 200];
+    const thresholds = gameId === "star-garden" ? [12, 25, 35] : gameId === "neon-rush" ? [500, 1500, 3000] : gameId === "angry-penguins" ? [400, 900, 1500] : [50, 120, 200];
     if (score >= thresholds[2]) return { label:"Perfect!", position:"50% 0%" };
     if (score >= thresholds[1]) return { label:"Awesome!", position:"100% 0%" };
     if (score >= thresholds[0]) return { label:"Good!", position:"0% 0%" };

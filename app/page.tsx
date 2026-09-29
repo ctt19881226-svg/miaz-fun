@@ -7,6 +7,13 @@ import { projects } from "@/lib/content";
 import { MiaLogo } from "@/components/site-chrome";
 
 const reactions = ["Hi! 👋", "Yay! ✨", "Let's play!", "Good job! 👍"];
+const keyboardIsland = {
+  title: "Keyboard Island",
+  type: "Experiment",
+  description: "Explore four playful keyboard games, collect stars, and climb the island leaderboard.",
+  art: "keyboard",
+  href: "/lab/keyboard-island/",
+} as const;
 const categories = [
   { href: "/games", title: "Mia's Games", copy: "Games made by Mia + AI", image: "/cards/games.png", tone: "blue" },
   { href: "/comics", title: "Mia's Comics", copy: "Stories, comics & silly ideas", image: "/cards/comics.png", tone: "pink" },
@@ -68,13 +75,15 @@ export default function Home() {
           <span className="mia-sticker-decor sticker-good" aria-hidden="true" />
           <span className="mini-doodle featured-star" aria-hidden="true">✷</span><p className="section-kicker">fresh from Mia&apos;s desk</p><h2 id="featured-title">Featured Creations <span>✦</span></h2>
           <div className="project-grid">
-            {projects.map((project, index) => (
+            {[keyboardIsland, ...projects].map((project, index) => (
               <a className="project-card" href={project.href ?? "/comics"} key={project.title} aria-label={project.href ? `Open ${project.title}` : `Visit ${project.title}`}>
                 {index === 0 && <span className="good-sticker" aria-hidden="true">GOOD!</span>}
                 <div className={`project-art ${project.art}`} aria-hidden="true">
+                  {project.art === "penguin" && <div className="penguin-cover homepage-penguin"><span className="penguin-sun" /><span className="penguin-hero">🐧</span><span className="penguin-ice">❄︎</span><span className="penguin-fish">🐟</span></div>}
                   {project.art === "stars" && <><span>★</span><span>✦</span><span>★</span></>}
                   {project.art === "snake" && <><span className="snake">●●●●●</span><span className="fruit">🍎</span></>}
                   {project.art === "comic" && <><span className="comic-panel">MIA</span><span className="comic-panel">♡</span></>}
+                  {project.art === "keyboard" && <><span className="keyboard-island">🌴</span><span className="keyboard-keys"><b>F</b><b>J</b><b>★</b></span></>}
                 </div>
                 <div className="project-body"><span className="project-type">{project.type}</span><h3>{project.title}</h3><p>{project.description}</p>{project.href ? <span className="project-action" aria-hidden="true"><ArrowRight /></span> : <span className="coming-soon">Coming soon</span>}</div>
               </a>

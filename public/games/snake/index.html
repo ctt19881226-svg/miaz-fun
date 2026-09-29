@@ -91,10 +91,12 @@
   .pad .down { grid-column: 2; grid-row: 2; }
   .pad .right { grid-column: 3; grid-row: 2; }
   .hint { font-size: 13px; color: #2d6a4f; opacity: .8; }
+  .sound-toggle { position: fixed; right: 14px; top: 14px; z-index: 20; width: 44px; height: 44px; border: 2px solid rgba(255,255,255,.75); border-radius: 50%; background: rgba(45,106,79,.82); color: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(27,67,50,.25); }
   @media (max-height: 640px) { h1 { font-size: 20px; } .pad { display: none; } }
 </style>
 </head>
 <body>
+<button class="sound-toggle" id="soundToggle" aria-label="关闭声音">🔊</button>
 <div class="wrap">
   <h1>🐍 小蛇吃果果 🍎</h1>
   <div class="scorebar">
@@ -137,13 +139,28 @@
   const ovTitle = document.getElementById('ovTitle');
   const ovText = document.getElementById('ovText');
   const startBtn = document.getElementById('startBtn');
+  const soundToggle = document.getElementById('soundToggle');
 
   let snake, dir, nextDir, food, score, fruits, best = +(localStorage.getItem('snakeBest') || 0);
   let timer = null, running = false, paused = false;
+  let sound = true, audio;
   bestEl.textContent = best;
 
   const FOODS = ['🍎', '🍓', '🍊', '🍑', '🍇', '🍉', '🍒'];
   let foodEmoji = FOODS[0];
+
+  function tone(freq, duration=.08, type='sine', volume=.065, endFreq=freq) {
+    if (!sound) return;
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return;
+    audio ??= new Audio();
+    if (audio.state === 'suspended') audio.resume();
+    const now = audio.currentTime, osc = audio.createOscillator(), gain = audio.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, now); osc.frequency.exponentialRampToValueAtTime(Math.max(30, endFreq), now + duration);
+    gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+    osc.connect(gain).connect(audio.destination); osc.start(now); osc.stop(now + duration);
+  }
+  function melody(notes, gap=70) { notes.forEach((note, i) => setTimeout(() => tone(note, .1, 'triangle'), i * gap)); }
 
   function reset() {
     snake = [{ x: 9, y: 10 }, { x: 8, y: 10 }, { x: 7, y: 10 }];
@@ -182,6 +199,7 @@
     if (head.x === food.x && head.y === food.y) {
       score += 10;
       fruits++;
+      tone(520 + Math.min(fruits, 8) * 45, .1, 'triangle', .075, 820);
       scoreEl.textContent = score;
       if (score > best) {
         best = score;
@@ -251,6 +269,7 @@
     running = true;
     paused = false;
     overlay.classList.remove('show');
+    melody([330, 440, 660], 65);
     clearTimeout(timer);
     draw();
     timer = setTimeout(tick, speed());
@@ -263,6 +282,7 @@
     ovText.textContent = `得分 ${score} 分${score >= best && score > 0 ? '，新纪录！🎉' : ''} · 按空格再玩一次`;
     startBtn.textContent = '再来一局 🔄';
     overlay.classList.add('show');
+    tone(240, .32, 'sawtooth', .07, 70);
     MiazPlayer.showSticker(overlay, 'snake-fruit', score);
     await MiazPlayer.submitScore('snake-fruit', score);
     let board = overlay.querySelector('.miaz-leaderboard');
@@ -275,12 +295,14 @@
     paused = !paused;
     if (paused) {
       clearTimeout(timer);
+      tone(420, .1, 'square', .04, 260);
       ovTitle.textContent = '⏸️ 暂停中';
       ovText.textContent = '按空格键继续';
       startBtn.textContent = '继续 ▶️';
       overlay.classList.add('show');
     } else {
       overlay.classList.remove('show');
+      melody([360, 520], 55);
       timer = setTimeout(tick, speed());
     }
   }
@@ -294,6 +316,12 @@
   startBtn.addEventListener('click', async () => {
     if (running && paused) togglePause();
     else { await MiazPlayer.ensureNickname(); start(); }
+  });
+  soundToggle.addEventListener('click', () => {
+    sound = !sound;
+    soundToggle.textContent = sound ? '🔊' : '🔇';
+    soundToggle.setAttribute('aria-label', sound ? '关闭声音' : '打开声音');
+    if (sound) tone(660, .08, 'sine', .05, 880);
   });
 
   const KEYS = {

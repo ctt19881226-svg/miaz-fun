@@ -3,12 +3,21 @@ export type Project = {
   title: string;
   type: "Game" | "Comic" | "Experiment";
   description: string;
-  art: "stars" | "snake" | "racer" | "comic";
+  art: "stars" | "snake" | "racer" | "penguin" | "comic";
   href?: string;
   status: "published" | "coming-soon";
 };
 
 export const projects: Project[] = [
+  {
+    slug: "angry-penguins",
+    title: "Angry Penguins",
+    type: "Game",
+    description: "Launch a penguin, crack the ice, and set off a spectacular chain reaction.",
+    art: "penguin",
+    href: "/games/angry-penguins/index.html",
+    status: "published",
+  },
   {
     slug: "star-garden",
     title: "Star Garden",
