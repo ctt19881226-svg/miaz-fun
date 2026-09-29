@@ -44,7 +44,7 @@ kbd{display:inline-block;padding:1px 6px;margin:0 1px;border-radius:6px;
   background:radial-gradient(80% 70% at 50% 45%, rgba(30,10,60,.55), rgba(4,6,14,.86));
   transition:opacity .35s, transform .35s}
 .overlay.hidden{opacity:0;pointer-events:none;transform:scale(1.02)}
-.card{text-align:center;padding:26px 34px;max-width:min(92vw,560px)}
+.card{text-align:center;padding:26px 34px;max-width:min(92vw,560px);max-height:92vh;overflow-y:auto}
 .title{margin:0;font-size:clamp(34px,7vw,62px);letter-spacing:.14em;font-weight:900;
   background:linear-gradient(90deg,#5bf0ff,#c07bff 55%,#ff5bb0);
   -webkit-background-clip:text;background-clip:text;color:transparent}
@@ -92,6 +92,7 @@ button:active{transform:translateY(1px)}
       </div>
       <div class="final" id="final"></div>
       <button id="startBtn">START ENGINE</button>
+      <div id="raceLeaderboard"></div>
     </div>
   </div>
 </div>
@@ -1019,6 +1020,11 @@ function saveBest(v){
 /* ---------------- flow ---------------- */
 function startGame(){
   resetWorld();
+  var oldReward = el.overlay.querySelector('.miaz-sticker-reward');
+  if (oldReward) oldReward.remove();
+  var oldBoard = document.getElementById('raceLeaderboard');
+  oldBoard.className = '';
+  oldBoard.innerHTML = '';
   G.state = 'playing';
   G.spawnT = 0.9;
   startEngine();
@@ -1047,9 +1053,7 @@ async function gameOver(){
   setTimeout(function(){ tone(330,.12,'triangle',.05,260); }, 80);
   MiazPlayer.showSticker(el.overlay.querySelector('.card'), 'neon-rush', score);
   await MiazPlayer.submitScore('neon-rush', score);
-  var board = el.overlay.querySelector('.miaz-leaderboard');
-  if (!board){ board = document.createElement('div'); el.overlay.querySelector('.card').appendChild(board); }
-  MiazPlayer.renderLeaderboard('neon-rush', board);
+  MiazPlayer.renderLeaderboard('neon-rush', document.getElementById('raceLeaderboard'));
 }
 
 function shift(dir){

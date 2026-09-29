@@ -15,10 +15,10 @@
   const clean = value => value.normalize("NFKC").trim().replace(/\s+/g, " ");
   const valid = value => value.length > 0 && value.length <= 16 && !/[<>\u0000-\u001f\u007f]/u.test(value);
   const getNickname = () => localStorage.getItem(STORAGE_KEY) || "";
+  let confirmedThisVisit = false;
 
   function ensureNickname() {
-    const saved = getNickname();
-    if (saved) return Promise.resolve(saved);
+    if (confirmedThisVisit && getNickname()) return Promise.resolve(getNickname());
     return askNickname();
   }
 
@@ -34,7 +34,7 @@
       form.addEventListener("submit", event => {
         event.preventDefault(); const nickname = clean(input.value);
         if (!valid(nickname)) { error.textContent = "Use 1–16 characters and leave out < or >."; return; }
-        localStorage.setItem(STORAGE_KEY, nickname); updateChip(); layer.remove(); resolve(nickname);
+        localStorage.setItem(STORAGE_KEY, nickname); confirmedThisVisit = true; updateChip(); layer.remove(); resolve(nickname);
       });
     });
   }

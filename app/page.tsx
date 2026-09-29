@@ -14,6 +14,7 @@ const keyboardIsland = {
   art: "keyboard",
   href: "/lab/keyboard-island/",
 } as const;
+const featuredProjects = projects.filter(({ slug }) => !["star-garden", "snake-fruit", "mias-comics"].includes(slug));
 const categories = [
   { href: "/games", title: "Mia's Games", copy: "Games made by Mia + AI", image: "/cards/games.png", tone: "blue" },
   { href: "/comics", title: "Mia's Comics", copy: "Stories, comics & silly ideas", image: "/cards/comics.png", tone: "pink" },
@@ -75,7 +76,7 @@ export default function Home() {
           <span className="mia-sticker-decor sticker-good" aria-hidden="true" />
           <span className="mini-doodle featured-star" aria-hidden="true">✷</span><p className="section-kicker">fresh from Mia&apos;s desk</p><h2 id="featured-title">Featured Creations <span>✦</span></h2>
           <div className="project-grid">
-            {[keyboardIsland, ...projects].map((project, index) => (
+            {[keyboardIsland, ...featuredProjects].map((project, index) => (
               <a className="project-card" href={project.href ?? "/comics"} key={project.title} aria-label={project.href ? `Open ${project.title}` : `Visit ${project.title}`}>
                 {index === 0 && <span className="good-sticker" aria-hidden="true">GOOD!</span>}
                 <div className={`project-art ${project.art}`} aria-hidden="true">
